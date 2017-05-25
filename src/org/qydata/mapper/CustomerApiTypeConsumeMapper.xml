@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.qydata.mapper.CustomerApiTypeConsumeMapper">
+
+
+    <resultMap id="CustomerApiTypeConsume_Map" type="org.qydata.po.CustomerApiTypeConsume">
+        <result column="id" property="id"/>
+        <result column="year" property="year"/>
+        <result column="month" property="month"/>
+        <result column="day" property="day"/>
+        <result column="customerId" property="customerId"/>
+        <result column="apiTypeId" property="apiTypeId"/>
+        <result column="stid" property="stid"/>
+        <result column="sumAmount" property="sumAmount"/>
+        <result column="countTotle" property="countTotle"/>
+        <result column="countSuccess" property="countSuccess"/>
+        <result column="apiTypeName" property="apiTypeName"/>
+        <result column="stidName" property="stidName"/>
+        <result column="companyName" property="companyName"/>
+    </resultMap>
+
+    <!--统计-->
+    <select id="queryCustomerApiTypeConsume" parameterType="map" resultMap="CustomerApiTypeConsume_Map">
+        SELECT a.id,a.year,a.month,a.day,a.customerId,a.apiTypeId,a.stid,a.sumAmount,a.countTotle,
+        a.countSuccess,a.consuTime,b.name apiTypeName,c.name stidName,d.companyName
+        FROM qycauth.cbkvwCompanyApiTypeConsumeDayCount a
+        LEFT JOIN qyfinance.bkvwApiType b ON a.apiTypeId=b.id
+        LEFT JOIN qyfinance.bkvwMobileOperator c ON a.stid=c.id
+        LEFT JOIN qyfinance.bkvwCustomer d ON a.customerId=d.id
+        WHERE
+            <![CDATA[
+                a.consuTime >= '2016-11-10' AND  a.consuTime <= '2016-11-14'
+            ]]>
+    </select>
+
+    <insert id="insertCustomerApiTypeConsume" parameterType="list">
+        INSERT INTO qyfinance.CompanyApiTypeConsumeDayCount(year,month,day,customerId,apiTypeId,stid,sumAmount,countTotle,countSuccess,consuTime)
+        VALUES
+        <foreach collection="list" item="con" index="index" separator=",">
+            (
+            #{con.years},#{con.months},#{con.days},
+            #{con.customerId},#{con.apiTypeId},#{con.stid},
+            #{con.sumAmount},#{con.countTotle},#{con.countSuccess},
+            #{con.consuTime}
+            )
+        </foreach>
+    </insert>
+
+    <delete id="deleteCustomerApiTypeConsume" parameterType="map">
+        DELETE FROM qyfinance.CompanyApiTypeConsumeDayCount
+        WHERE year=#{years}
+        AND month=#{months}
+        AND day=#{days}
+    </delete>
+
+</mapper>
