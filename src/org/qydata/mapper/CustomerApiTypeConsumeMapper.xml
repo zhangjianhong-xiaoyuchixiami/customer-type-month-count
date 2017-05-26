@@ -4,24 +4,43 @@
 <mapper namespace="org.qydata.mapper.CustomerApiTypeConsumeMapper">
 
 
-    <resultMap id="CustomerApiTypeConsume_Map" type="org.qydata.po.CustomerApiTypeConsume">
-        <result column="id" property="id"/>
-        <result column="year" property="year"/>
-        <result column="month" property="month"/>
-        <result column="day" property="day"/>
+    <resultMap id="CustomerApiTypeConsume_Map" type="org.qydata.po.Customer">
         <result column="customerId" property="customerId"/>
-        <result column="apiTypeId" property="apiTypeId"/>
-        <result column="stid" property="stid"/>
-        <result column="sumAmount" property="sumAmount"/>
-        <result column="countTotle" property="countTotle"/>
-        <result column="countSuccess" property="countSuccess"/>
-        <result column="apiTypeName" property="apiTypeName"/>
-        <result column="stidName" property="stidName"/>
         <result column="companyName" property="companyName"/>
+        <collection property="customerApiTypeConsumeList" ofType="org.qydata.po.CustomerApiTypeConsume">
+
+            <result column="id" property="id"/>
+            <result column="year" property="year"/>
+            <result column="month" property="month"/>
+            <result column="day" property="day"/>
+            <result column="apiTypeId" property="apiTypeId"/>
+            <result column="stid" property="stid"/>
+            <result column="sumAmount" property="sumAmount"/>
+            <result column="countTotle" property="countTotle"/>
+            <result column="countSuccess" property="countSuccess"/>
+            <result column="consuTime" property="consuTime"/>
+            <result column="apiTypeName" property="apiTypeName"/>
+            <result column="stidName" property="stidName"/>
+        </collection>
     </resultMap>
 
-    <!--统计-->
-    <select id="queryCustomerApiTypeConsume" parameterType="map" resultMap="CustomerApiTypeConsume_Map">
+    <resultMap id="CustomerApiTypeConsume_Detail_Map" type="org.qydata.po.Customer">
+        <result column="customerId" property="customerId" />
+       <collection property="customerApiTypeConsumeDetailList" ofType="org.qydata.po.CustomerApiTypeConsumeDetail">
+           <result column="id" property="id" />
+           <result column="amount" property="amount" />
+           <result column="createTime" property="createTime" />
+           <result column="apiTypeId" property="apiTypeId" />
+           <result column="stid" property="stid" />
+           <result column="k" property="k" />
+           <result column="reqId" property="reqId" />
+           <result column="apiTypeName" property="apiTypeName" />
+           <result column="stidName" property="stidName" />
+       </collection>
+    </resultMap>
+
+    <!--统计当前月的上一个月统计消费（上月数据按天统计）-->
+    <select id="queryCustomerLastMonthConsume" parameterType="map" resultMap="CustomerApiTypeConsume_Map">
         SELECT a.id,a.year,a.month,a.day,a.customerId,a.apiTypeId,a.stid,a.sumAmount,a.countTotle,
         a.countSuccess,a.consuTime,b.name apiTypeName,c.name stidName,d.companyName
         FROM qycauth.cbkvwCompanyApiTypeConsumeDayCount a
@@ -30,28 +49,41 @@
         LEFT JOIN qyfinance.bkvwCustomer d ON a.customerId=d.id
         WHERE
             <![CDATA[
-                a.consuTime >= '2016-11-10' AND  a.consuTime <= '2016-11-14'
+               a.consuTime >= '2016-11-10' AND a.consuTime <= '2016-11-14'
             ]]>
     </select>
 
-    <insert id="insertCustomerApiTypeConsume" parameterType="list">
-        INSERT INTO qyfinance.CompanyApiTypeConsumeDayCount(year,month,day,customerId,apiTypeId,stid,sumAmount,countTotle,countSuccess,consuTime)
+    <!--统计当前月的上一个月统计消费（明细）-->
+    <select id="queryCustomerLastMonthConsumeDetail" parameterType="map" resultMap="CustomerApiTypeConsume_Detail_Map">
+        SELECT a.id,a.customerId,a.amount,a.createTime,
+        b.apiTypeId,b.stid,b.k,b.reqId,
+        c.name apiTypeName,
+        d.name stidName
+        FROM qycauth.cbkvwCustomerBalanceLog a
+        INNER JOIN qycauth.cbkvwCustomerRequestLog b ON a.reqId=b.requestId
+        LEFT JOIN qyfinance.bkvwApiType c ON b.apiTypeId=c.id
+        LEFT JOIN qyfinance.bkvwMobileOperator d ON b.stid=d.id
+        WHERE
+        <![CDATA[
+                a.createTime >= '2016-11-10 00:00:00' AND a.createTime <= '2016-11-14 23:59:59'
+         ]]>
+    </select>
+
+    <!--保存-->
+    <insert id="insertCustomerConsumeExcel" parameterType="list">
+        INSERT INTO qycauth.CustomerConsumeExcel(customerId,excelCode,consuTime,createTime)
         VALUES
         <foreach collection="list" item="con" index="index" separator=",">
             (
-            #{con.years},#{con.months},#{con.days},
-            #{con.customerId},#{con.apiTypeId},#{con.stid},
-            #{con.sumAmount},#{con.countTotle},#{con.countSuccess},
-            #{con.consuTime}
+            #{con.customerId},#{con.excelCode},#{con.consuTime},now()
             )
         </foreach>
     </insert>
 
-    <delete id="deleteCustomerApiTypeConsume" parameterType="map">
-        DELETE FROM qyfinance.CompanyApiTypeConsumeDayCount
-        WHERE year=#{years}
-        AND month=#{months}
-        AND day=#{days}
+    <!--删除-->
+    <delete id="deleteCustomerConsumeExcel" parameterType="String">
+        DELETE FROM qycauth.CustomerConsumeExcel
+        WHERE consuTime=#{param}
     </delete>
 
 </mapper>

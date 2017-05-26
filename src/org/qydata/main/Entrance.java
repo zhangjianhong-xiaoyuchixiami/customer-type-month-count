@@ -3,12 +3,12 @@ package org.qydata.main;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
-import org.qydata.po.CustomerApiTypeConsume;
+import org.qydata.po.Customer;
+import org.qydata.po.CustomerConsumeExcel;
 import org.qydata.tools.CalendarAssistTool;
 import org.qydata.tools.ExcelUtil;
 
 import java.io.InputStream;
-import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,26 +25,43 @@ public class Entrance {
         SqlSessionFactory sessionFactory = new SqlSessionFactoryBuilder().build(is);
         SqlSession session = sessionFactory.openSession();
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+            //增删改操作一定要提交事务
             //删除
-            // Map<String,Object> mapDelete = new HashMap<>();
-            //mapDelete.put("years", CalendarAssistTool.getCurrentYear());
-            // mapDelete.put("months",CalendarAssistTool.getCurrentMonth());
-            // mapDelete.put("days",CalendarAssistTool.getCurrentDay());
-            //String statementDelete = "org.qydata.mapper.CustomerApiTypeConsumeMapper.deleteCustomerApiTypeConsume";
-            // int flag = session.delete(statementDelete,mapDelete);
-            // session.commit();
+            String statementDelete = "org.qydata.mapper.CustomerApiTypeConsumeMapper.deleteCustomerConsumeExcel";
+            int flag = session.delete(statementDelete,CalendarAssistTool.getCurrentDateLastMonth());
+            session.commit();
+
             //查询
-            String statementSelect = "org.qydata.mapper.CustomerApiTypeConsumeMapper.queryCustomerApiTypeConsume";
+            String statementSelect = "org.qydata.mapper.CustomerApiTypeConsumeMapper.queryCustomerLastMonthConsume";
             Map<String, Object> mapParam = new HashMap<>();
             mapParam.put("firstDay", CalendarAssistTool.getCurrentDateLastMonthFirstDay());
             mapParam.put("lastDay",CalendarAssistTool.getCurrentDateLastMonthEndDay());
-            List<CustomerApiTypeConsume> customerApiTypeConsumeList = session.selectList(statementSelect, mapParam);
-            ExcelUtil.createExcel(customerApiTypeConsumeList);
-            //String statementInsert = "org.qydata.mapper.CustomerApiTypeConsumeMapper.insertCustomerApiTypeConsume";
-            // int result = session.insert(statementInsert, customerApiTypeConsumes);
-            //增删改操作一定要提交事务
-            //session.commit();
+            List<Customer> customerList = session.selectList(statementSelect, mapParam);
+
+            String statementDetailSelect = "org.qydata.mapper.CustomerApiTypeConsumeMapper.queryCustomerLastMonthConsumeDetail";
+            Map<String, Object> mapDetailParam = new HashMap<>();
+            mapDetailParam.put("firstDay", CalendarAssistTool.getCurrentDateLastMonthFirstDay()+" "+"00:00:00");
+            mapDetailParam.put("lastDay",CalendarAssistTool.getCurrentDateLastMonthEndDay()+" "+"23:59:59");
+            List<Customer> customerDetailList = session.selectList(statementDetailSelect, mapDetailParam);
+
+            for (int i=0;i<customerList.size(); i++){
+                Customer customer = customerList.get(i);
+                for (int j=0;j<customerDetailList.size(); j++){
+                    Customer customerDetail = customerDetailList.get(j);
+                    if (customer.getCustomerId() == customerDetail.getCustomerId()){
+                        customer.setCustomerApiTypeConsumeDetailList(customerDetail.getCustomerApiTypeConsumeDetailList());
+                    }
+                }
+            }
+
+            //添加
+            List<CustomerConsumeExcel> customerConsumeExcelList = ExcelUtil.createExcel(customerList);
+            if(customerConsumeExcelList.size() > 0) {
+                String statementInsert = "org.qydata.mapper.CustomerApiTypeConsumeMapper.insertCustomerConsumeExcel";
+                int result = session.insert(statementInsert, customerConsumeExcelList);
+                session.commit();
+            }
 
         }catch (Exception e){
             e.printStackTrace();

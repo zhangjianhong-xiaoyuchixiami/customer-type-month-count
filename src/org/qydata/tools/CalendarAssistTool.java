@@ -8,11 +8,6 @@ import java.util.Calendar;
  */
 public class CalendarAssistTool {
 
-    public static void main(String[] args) {
-        System.out.println(getCurrentDateLastMonthFirstDay());
-        System.out.println(getCurrentDateLastMonthEndDay());
-    }
-
 
     /**
      * 取得当前时间的上一个月份第一天
@@ -39,5 +34,15 @@ public class CalendarAssistTool {
         return lastDay ;
     }
 
+    /**
+     * 取得当前时间的上一个月份是某年某月
+     * @return
+     */
+    public static String getCurrentDateLastMonth() {
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        return year +"-"+ month;
+    }
 
 }

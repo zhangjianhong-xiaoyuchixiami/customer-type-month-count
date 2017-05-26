@@ -11,7 +11,6 @@ public class CustomerApiTypeConsume implements Serializable {
     private Integer year;
     private Integer month;
     private Integer day;
-    private Integer customerId;
     private Integer apiTypeId;
     private Integer stid;
     private Integer sumAmount;
@@ -20,7 +19,7 @@ public class CustomerApiTypeConsume implements Serializable {
     private Date consuTime;
     private String apiTypeName;
     private String stidName;
-    private String companyName;
+
 
     public Integer getId() {
         return id;
@@ -52,14 +51,6 @@ public class CustomerApiTypeConsume implements Serializable {
 
     public void setDay(Integer day) {
         this.day = day;
-    }
-
-    public Integer getCustomerId() {
-        return customerId;
-    }
-
-    public void setCustomerId(Integer customerId) {
-        this.customerId = customerId;
     }
 
     public Integer getApiTypeId() {
@@ -126,11 +117,5 @@ public class CustomerApiTypeConsume implements Serializable {
         this.stidName = stidName;
     }
 
-    public String getCompanyName() {
-        return companyName;
-    }
 
-    public void setCompanyName(String companyName) {
-        this.companyName = companyName;
-    }
 }
