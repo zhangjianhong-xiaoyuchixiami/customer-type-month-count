@@ -45,15 +45,20 @@ public class Entrance {
             mapDetailParam.put("lastDay",CalendarAssistTool.getCurrentDateLastMonthEndDay()+" "+"23:59:59");
             List<Customer> customerDetailList = session.selectList(statementDetailSelect, mapDetailParam);
 
-            for (int i=0;i<customerList.size(); i++){
-                Customer customer = customerList.get(i);
-                for (int j=0;j<customerDetailList.size(); j++){
-                    Customer customerDetail = customerDetailList.get(j);
-                    if (customer.getCustomerId() == customerDetail.getCustomerId()){
-                        customer.setCustomerApiTypeConsumeDetailList(customerDetail.getCustomerApiTypeConsumeDetailList());
+            if (customerList != null){
+                for (int i=0;i<customerList.size(); i++){
+                    Customer customer = customerList.get(i);
+                    if (customerDetailList != null){
+                        for (int j=0;j<customerDetailList.size(); j++){
+                            Customer customerDetail = customerDetailList.get(j);
+                            if (customer.getCustomerId() == customerDetail.getCustomerId()){
+                                customer.setCustomerApiTypeConsumeDetailList(customerDetail.getCustomerApiTypeConsumeDetailList());
+                            }
+                        }
                     }
                 }
             }
+
 
             //添加
             List<CustomerConsumeExcel> customerConsumeExcelList = ExcelUtil.createExcel(customerList);

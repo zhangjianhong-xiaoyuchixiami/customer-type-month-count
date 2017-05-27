@@ -56,7 +56,7 @@ public class ExcelUtil {
 
         row = sheet.createRow(1);
         cell = row.createCell(0);
-        cell.setCellValue("对账日期："+CalendarAssistTool.getCurrentDateLastMonthFirstDay()+"至"+CalendarAssistTool.getCurrentDateLastMonthEndDay());
+        cell.setCellValue("时间范围："+CalendarAssistTool.getCurrentDateLastMonthFirstDay()+"至"+CalendarAssistTool.getCurrentDateLastMonthEndDay());
         row.setHeightInPoints(20);//设置行的高度是20个点
         region = new CellRangeAddress(1, 1, 0, 3);
         sheet.addMergedRegion(region);
@@ -106,9 +106,9 @@ public class ExcelUtil {
 
 
         //创建行row:添加表头0行
-         row = sheetDetail.createRow(0);
-         style = wb.createCellStyle();
-         font = wb.createFont();
+        row = sheetDetail.createRow(0);
+        style = wb.createCellStyle();
+        font = wb.createFont();
         style.setAlignment(HSSFCellStyle.ALIGN_CENTER);  //设置字体居中
         font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
         style.setFont(font);
@@ -122,7 +122,7 @@ public class ExcelUtil {
         row.setHeightInPoints(20);//设置行的高度是20个点
 
         //创建明细单元格
-         cell = row.createCell(0);         //第一个单元格
+        cell = row.createCell(0);         //第一个单元格
         cell.setCellValue("日期");                  //设定值
         cell.setCellStyle(style);                   //内容居中
 
@@ -142,6 +142,14 @@ public class ExcelUtil {
         cell.setCellValue("reqId");
         cell.setCellStyle(style);
 
+        style = wb.createCellStyle();
+        style.setFillForegroundColor(HSSFColor.GREY_25_PERCENT.index);//设置图案颜色
+        style.setFillBackgroundColor(HSSFColor.GREY_25_PERCENT.index);//设置图案背景色
+        style.setFillPattern(HSSFCellStyle.THIN_FORWARD_DIAG);//设置图案样式
+        style.setBorderTop(HSSFCellStyle.BORDER_THIN);//上边框
+        style.setBorderBottom(HSSFCellStyle.BORDER_THIN);//下边框
+        style.setBorderLeft(HSSFCellStyle.BORDER_THIN);//左边框
+        style.setBorderRight(HSSFCellStyle.BORDER_THIN);//右边框
 
         List<CustomerConsumeExcel> customerConsumeExcelList = new ArrayList<>();
         if (customerList != null){
@@ -153,62 +161,34 @@ public class ExcelUtil {
                 if (customerApiTypeConsumeList != null){
                     for (int j = 0; j < customerApiTypeConsumeList.size(); j++) {
                         CustomerApiTypeConsume customerApiTypeConsume = customerApiTypeConsumeList.get(j);
-                        style = wb.createCellStyle();
-                        style.setFillForegroundColor(HSSFColor.GREY_25_PERCENT.index);//设置图案颜色
-                        style.setFillBackgroundColor(HSSFColor.GREY_25_PERCENT.index);//设置图案背景色
-                        style.setFillPattern(HSSFCellStyle.THIN_FORWARD_DIAG);//设置图案样式
-                        style.setBorderTop(HSSFCellStyle.BORDER_THIN);//上边框
-                        style.setBorderBottom(HSSFCellStyle.BORDER_THIN);//下边框
-                        style.setBorderLeft(HSSFCellStyle.BORDER_THIN);//左边框
-                        style.setBorderRight(HSSFCellStyle.BORDER_THIN);//右边框
                         row = sheet.createRow(j + 3);
                         //创建单元格并且添加数据
+                        cell = row.createCell(0);
+                        cell.setCellStyle(style);
                         if(customerApiTypeConsume.getConsuTime() != null){
-                            cell = row.createCell(0);
                             cell.setCellValue(sdf.format(customerApiTypeConsume.getConsuTime()));
-                            cell.setCellStyle(style);
-                        }else {
-                            cell = row.createCell(0);
-                            cell.setCellValue("");
-                            cell.setCellStyle(style);
                         }
-
+                        cell = row.createCell(1);
+                        cell.setCellStyle(style);
                         if (customerApiTypeConsume.getApiTypeName() != null) {
                             if (customerApiTypeConsume.getStidName() != null) {
-                                cell = row.createCell(1);
                                 cell.setCellValue(customerApiTypeConsume.getApiTypeName() + "-" + customerApiTypeConsume.getStidName());
-                                cell.setCellStyle(style);
                             } else {
-                                cell = row.createCell(1);
                                 cell.setCellValue(customerApiTypeConsume.getApiTypeName());
-                                cell.setCellStyle(style);
                             }
-                        } else {
-                            cell = row.createCell(1);
-                            cell.setCellValue("");
-                            cell.setCellStyle(style);
                         }
-
+                        cell = row.createCell(2);
+                        cell.setCellStyle(style);
                         if (customerApiTypeConsume.getSumAmount() != null) {
-                            cell = row.createCell(2);
                             cell.setCellValue(-customerApiTypeConsume.getSumAmount() / 100.0);
-                            cell.setCellStyle(style);
-                        } else {
-                           cell = row.createCell(2);
-                           cell.setCellValue(0);
-                            cell.setCellStyle(style);
                         }
-
+                        cell = row.createCell(3);
+                        cell.setCellStyle(style);
                         if (customerApiTypeConsume.getCountSuccess() != null) {
-                           cell = row.createCell(3);
-                           cell.setCellValue(customerApiTypeConsume.getCountSuccess());
-                            cell.setCellStyle(style);
-                        } else {
-                           cell = row.createCell(3);
-                           cell.setCellValue(0);
-                            cell.setCellStyle(style);
+                            cell.setCellValue(customerApiTypeConsume.getCountSuccess());
                         }
                     }
+
                 }
 
                 //循环遍历生成明细的Excel
@@ -216,70 +196,38 @@ public class ExcelUtil {
                 if (customerApiTypeConsumeDetailList != null){
                     for (int r=0; r<customerApiTypeConsumeDetailList.size(); r++){
                         CustomerApiTypeConsumeDetail customerApiTypeConsumeDetail = customerApiTypeConsumeDetailList.get(r);
-                        style = wb.createCellStyle();
-                        style.setFillForegroundColor(HSSFColor.GREY_25_PERCENT.index);//设置图案颜色
-                        style.setFillBackgroundColor(HSSFColor.GREY_25_PERCENT.index);//设置图案背景色
-                        style.setFillPattern(HSSFCellStyle.THIN_FORWARD_DIAG);//设置图案样式
-                        style.setBorderTop(HSSFCellStyle.BORDER_THIN);//上边框
-                        style.setBorderBottom(HSSFCellStyle.BORDER_THIN);//下边框
-                        style.setBorderLeft(HSSFCellStyle.BORDER_THIN);//左边框
-                        style.setBorderRight(HSSFCellStyle.BORDER_THIN);//右边框
                         row = sheetDetail.createRow(r + 1);
                         //创建单元格并且添加数据
+                        cell = row.createCell(0);
+                        cell.setCellStyle(style);
                         if(customerApiTypeConsumeDetail.getCreateTime() != null){
-                            cell = row.createCell(0);
                             cell.setCellValue(sdfDetail.format(customerApiTypeConsumeDetail.getCreateTime()));
-                            cell.setCellStyle(style);
-                        }else {
-                            cell = row.createCell(0);
-                            cell.setCellValue("");
-                            cell.setCellStyle(style);
                         }
-
+                        cell = row.createCell(1);
+                        cell.setCellStyle(style);
                         if (customerApiTypeConsumeDetail.getApiTypeName() != null) {
                             if (customerApiTypeConsumeDetail.getStidName() == null) {
-                                cell = row.createCell(1);
                                 cell.setCellValue(customerApiTypeConsumeDetail.getApiTypeName());
-                                cell.setCellStyle(style);
                             } else {
-                                cell = row.createCell(1);
                                 cell.setCellValue(customerApiTypeConsumeDetail.getApiTypeName() + "-" + customerApiTypeConsumeDetail.getStidName());
-                                cell.setCellStyle(style);
                             }
-                        } else {
-                            cell = row.createCell(1);
-                            cell.setCellValue("");
-                            cell.setCellStyle(style);
                         }
-
+                        cell = row.createCell(2);
+                        cell.setCellStyle(style);
                         if (customerApiTypeConsumeDetail.getAmount() != null) {
-                            cell = row.createCell(2);
                             cell.setCellValue(-customerApiTypeConsumeDetail.getAmount() / 100.0);
-                            cell.setCellStyle(style);
-                        } else {
-                            cell = row.createCell(2);
-                            cell.setCellValue(0);
-                            cell.setCellStyle(style);
                         }
 
+                        cell = row.createCell(3);
+                        cell.setCellStyle(style);
                         if (customerApiTypeConsumeDetail.getK() != null) {
-                            cell = row.createCell(3);
                             cell.setCellValue(customerApiTypeConsumeDetail.getK());
-                            cell.setCellStyle(style);
-                        } else {
-                            cell = row.createCell(3);
-                            cell.setCellValue("");
-                            cell.setCellStyle(style);
                         }
 
+                        cell = row.createCell(4);
+                        cell.setCellStyle(style);
                         if (customerApiTypeConsumeDetail.getReqId() != null) {
-                            cell = row.createCell(4);
                             cell.setCellValue(customerApiTypeConsumeDetail.getReqId());
-                            cell.setCellStyle(style);
-                        } else {
-                            cell = row.createCell(4);
-                            cell.setCellValue("");
-                            cell.setCellStyle(style);
                         }
                     }
                 }
@@ -309,6 +257,8 @@ public class ExcelUtil {
                     customerConsumeExcel.setCustomerId(customer.getCustomerId());
                     customerConsumeExcel.setExcelCode(out.toByteArray());
                     customerConsumeExcel.setConsuTime(CalendarAssistTool.getCurrentDateLastMonth());
+                    customerConsumeExcel.setYear(CalendarAssistTool.getCurrentDateLastMonthYear());
+                    customerConsumeExcel.setMonth(CalendarAssistTool.getCurrentDateLastMonthMonth());
                     customerConsumeExcelList.add(customerConsumeExcel);
                 } catch (IOException e) {
                     e.printStackTrace();

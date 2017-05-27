@@ -8,7 +8,6 @@
         <result column="customerId" property="customerId"/>
         <result column="companyName" property="companyName"/>
         <collection property="customerApiTypeConsumeList" ofType="org.qydata.po.CustomerApiTypeConsume">
-
             <result column="id" property="id"/>
             <result column="year" property="year"/>
             <result column="month" property="month"/>
@@ -63,19 +62,19 @@
         INNER JOIN qycauth.cbkvwCustomerRequestLog b ON a.reqId=b.requestId
         LEFT JOIN qyfinance.bkvwApiType c ON b.apiTypeId=c.id
         LEFT JOIN qyfinance.bkvwMobileOperator d ON b.stid=d.id
-        WHERE
+        WHERE a.customerId=9
         <![CDATA[
-                a.createTime >= '2016-11-10 00:00:00' AND a.createTime <= '2016-11-14 23:59:59'
+              AND a.createTime >= '2017-01-01 00:00:00' AND a.createTime <= '20174-01-30 23:59:59'
          ]]>
     </select>
 
     <!--保存-->
     <insert id="insertCustomerConsumeExcel" parameterType="list">
-        INSERT INTO qycauth.CustomerConsumeExcel(customerId,excelCode,consuTime,createTime)
+        INSERT INTO qycauth.CustomerConsumeExcel(customerId,excelCode,consuTime,year,month,createTime)
         VALUES
         <foreach collection="list" item="con" index="index" separator=",">
             (
-            #{con.customerId},#{con.excelCode},#{con.consuTime},now()
+            #{con.customerId},#{con.excelCode},#{con.consuTime},#{con.year},#{con.month},now()
             )
         </foreach>
     </insert>
