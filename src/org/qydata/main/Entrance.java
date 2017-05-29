@@ -4,11 +4,14 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.qydata.po.Customer;
+import org.qydata.po.CustomerApiTypeConsume;
+import org.qydata.po.CustomerApiTypeConsumeDetail;
 import org.qydata.po.CustomerConsumeExcel;
 import org.qydata.tools.CalendarAssistTool;
 import org.qydata.tools.ExcelUtil;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,9 +62,22 @@ public class Entrance {
                 }
             }
 
+            List<CustomerConsumeExcel> customerConsumeExcelList = new ArrayList<>();
+            if (customerList != null) {
+                for (int i = 0; i < customerList.size(); i++) {
+                    Customer customer = customerList.get(i);
+                    List<CustomerApiTypeConsume> customerApiTypeConsumeList = customer.getCustomerApiTypeConsumeList();
+                    List<CustomerApiTypeConsumeDetail> customerApiTypeConsumeDetailList = customer.getCustomerApiTypeConsumeDetailList();
+                    Map<String,Object> mapExcelParam = new HashMap<>();
+                    mapExcelParam.put("customerId",customer.getCustomerId());
+                    mapExcelParam.put("customerApiTypeConsumeList",customerApiTypeConsumeList);
+                    mapExcelParam.put("customerApiTypeConsumeDetailList",customerApiTypeConsumeDetailList);
+                    CustomerConsumeExcel customerConsumeExcel = ExcelUtil.createExcel(mapExcelParam);
+                    customerConsumeExcelList.add(customerConsumeExcel);
+                }
+            }
 
             //添加
-            List<CustomerConsumeExcel> customerConsumeExcelList = ExcelUtil.createExcel(customerList);
             if(customerConsumeExcelList.size() > 0) {
                 String statementInsert = "org.qydata.mapper.CustomerApiTypeConsumeMapper.insertCustomerConsumeExcel";
                 int result = session.insert(statementInsert, customerConsumeExcelList);

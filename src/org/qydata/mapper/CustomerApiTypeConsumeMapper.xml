@@ -25,17 +25,17 @@
 
     <resultMap id="CustomerApiTypeConsume_Detail_Map" type="org.qydata.po.Customer">
         <result column="customerId" property="customerId" />
-       <collection property="customerApiTypeConsumeDetailList" ofType="org.qydata.po.CustomerApiTypeConsumeDetail">
-           <result column="id" property="id" />
-           <result column="amount" property="amount" />
-           <result column="createTime" property="createTime" />
-           <result column="apiTypeId" property="apiTypeId" />
-           <result column="stid" property="stid" />
-           <result column="k" property="k" />
-           <result column="reqId" property="reqId" />
-           <result column="apiTypeName" property="apiTypeName" />
-           <result column="stidName" property="stidName" />
-       </collection>
+        <collection property="customerApiTypeConsumeDetailList" ofType="org.qydata.po.CustomerApiTypeConsumeDetail">
+            <result column="id" property="id" />
+            <result column="amount" property="amount" />
+            <result column="createTime" property="createTime" />
+            <result column="apiTypeId" property="apiTypeId" />
+            <result column="stid" property="stid" />
+            <result column="k" property="k" />
+            <result column="reqId" property="reqId" />
+            <result column="apiTypeName" property="apiTypeName" />
+            <result column="stidName" property="stidName" />
+        </collection>
     </resultMap>
 
     <!--统计当前月的上一个月统计消费（上月数据按天统计）-->
@@ -47,9 +47,9 @@
         LEFT JOIN qyfinance.bkvwMobileOperator c ON a.stid=c.id
         LEFT JOIN qyfinance.bkvwCustomer d ON a.customerId=d.id
         WHERE
-            <![CDATA[
-               a.consuTime >= '2016-11-10' AND a.consuTime <= '2016-11-14'
-            ]]>
+        <![CDATA[
+           a.consuTime >= '2017-01-01' AND a.consuTime <= '2017-01-31'
+        ]]>
     </select>
 
     <!--统计当前月的上一个月统计消费（明细）-->
@@ -62,9 +62,9 @@
         INNER JOIN qycauth.cbkvwCustomerRequestLog b ON a.reqId=b.requestId
         LEFT JOIN qyfinance.bkvwApiType c ON b.apiTypeId=c.id
         LEFT JOIN qyfinance.bkvwMobileOperator d ON b.stid=d.id
-        WHERE a.customerId=9
+        WHERE
         <![CDATA[
-              AND a.createTime >= '2017-01-01 00:00:00' AND a.createTime <= '20174-01-30 23:59:59'
+            a.createTime >= '2017-01-01 00:00:00' AND a.createTime <= '2017-01-31 23:59:59'
          ]]>
     </select>
 
