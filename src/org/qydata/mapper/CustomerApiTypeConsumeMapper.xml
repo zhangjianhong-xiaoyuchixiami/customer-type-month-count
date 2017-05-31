@@ -48,7 +48,7 @@
         LEFT JOIN qyfinance.bkvwCustomer d ON a.customerId=d.id
         WHERE
         <![CDATA[
-           a.consuTime >= '2017-01-01' AND a.consuTime <= '2017-01-31'
+           a.consuTime >= #{firstDay} AND a.consuTime <= #{lastDay}
         ]]>
     </select>
 
@@ -64,7 +64,7 @@
         LEFT JOIN qyfinance.bkvwMobileOperator d ON b.stid=d.id
         WHERE
         <![CDATA[
-            a.createTime >= '2017-01-01 00:00:00' AND a.createTime <= '2017-01-31 23:59:59'
+            a.createTime >= #{firstDay} AND a.createTime <= #{lastDay}
          ]]>
     </select>
 

@@ -281,7 +281,7 @@ public class ExcelUtil {
         FileInputStream fis = null;
         ByteArrayOutputStream out = null;
         try {
-            File file = new File("D:\\finance\\" + CalendarAssistTool.getCurrentDateLastMonth() + "\\"+customerId+"@"+CalendarAssistTool.getCurrentDateLastMonth()+".xls");
+            File file = new File("/finance/" + CalendarAssistTool.getCurrentDateLastMonth() + "/"+customerId+"@"+CalendarAssistTool.getCurrentDateLastMonth()+".xls");
             if (!file.exists()) {
                 file.getParentFile().mkdirs();
                 file.createNewFile();
